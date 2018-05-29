@@ -10,6 +10,8 @@ using UnityEngine.UI;
 public class ARCameraSync : UIBehaviour
 {
 
+	private const float LIMIT_ROT = 80.0f;
+
 	[SerializeField]
 	private RectTransform[] topUI;
 	[SerializeField]
@@ -26,16 +28,14 @@ public class ARCameraSync : UIBehaviour
 	{
 		Input.gyro.enabled = true;
 		var animTime = 0.3f;
-		var limitRot = 80.0f;
 
 		triggerRotationX
-			.Select (_ => Mathf.Clamp (_ * 10.0f, 0.0f, limitRot))
 			.Subscribe (_ =>
 			{
 				foreach (var ui in topUI)
 				{
-					ui.DORotate (Vector3.right * (limitRot - _), animTime).Play ();
-					ui.DOAnchorPosY ((limitRot - _), animTime).Play ();
+					ui.DORotate (Vector3.right * (LIMIT_ROT - _), animTime).Play ();
+					ui.DOAnchorPosY ((LIMIT_ROT - _), animTime).Play ();
 				}
 				foreach (var ui in bottomUI)
 				{
@@ -46,7 +46,6 @@ public class ARCameraSync : UIBehaviour
 			.AddTo (this);
 
 		triggerRotationY
-			.Select (_ => Mathf.Clamp (_ * 10.0f, 0.0f, limitRot))
 			.Subscribe (_ =>
 			{
 				foreach (var ui in rightUI)
@@ -56,8 +55,8 @@ public class ARCameraSync : UIBehaviour
 				}
 				foreach (var ui in leftUI)
 				{
-					ui.DORotate (Vector3.up * (limitRot - _), animTime).Play ();
-					ui.DOAnchorPosX (-(limitRot - _), animTime).Play ();
+					ui.DORotate (Vector3.up * (LIMIT_ROT - _), animTime).Play ();
+					ui.DOAnchorPosX (-(LIMIT_ROT - _), animTime).Play ();
 				}
 			})
 			.AddTo (this);
@@ -66,7 +65,9 @@ public class ARCameraSync : UIBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		triggerRotationX.Value += Input.gyro.rotationRate.x;
-		triggerRotationY.Value += Input.gyro.rotationRate.y;
+		var nextX = triggerRotationX.Value + Input.gyro.rotationRate.x * 10.0f;
+		var nextY = triggerRotationY.Value + Input.gyro.rotationRate.y * 10.0f;
+		triggerRotationX.Value = Mathf.Clamp (nextX, 0.0f, LIMIT_ROT);
+		triggerRotationY.Value = Mathf.Clamp (nextY, 0.0f, LIMIT_ROT);
 	}
 }
