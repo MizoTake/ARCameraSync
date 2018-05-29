@@ -1034,10 +1034,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d088a998d02a7d14695ac36f5dec9af1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  planes:
+  topUI:
   - {fileID: 674098950}
+  bottomUI:
   - {fileID: 1959980103}
+  rightUI:
   - {fileID: 474878983}
+  leftUI:
   - {fileID: 594295860}
 --- !u!1 &897494239
 GameObject:

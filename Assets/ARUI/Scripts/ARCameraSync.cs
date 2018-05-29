@@ -11,7 +11,13 @@ public class ARCameraSync : UIBehaviour
 {
 
 	[SerializeField]
-	private RectTransform[] planes;
+	private RectTransform[] topUI;
+	[SerializeField]
+	private RectTransform[] bottomUI;
+	[SerializeField]
+	private RectTransform[] rightUI;
+	[SerializeField]
+	private RectTransform[] leftUI;
 	private ReactiveProperty<float> triggerRotationX = new ReactiveProperty<float> ();
 	private ReactiveProperty<float> triggerRotationY = new ReactiveProperty<float> ();
 
@@ -26,10 +32,16 @@ public class ARCameraSync : UIBehaviour
 			.Subscribe (_ =>
 			{
 				var x = Mathf.Clamp (_ * 10.0f, 0.0f, limitRot);
-				planes[0].DORotate (Vector3.right * (limitRot - x), animTime).Play ();
-				planes[0].DOAnchorPosY ((limitRot - x), animTime).Play ();
-				planes[1].DORotate (Vector3.right * x, animTime).Play ();
-				planes[1].DOAnchorPosY (-x, animTime).Play ();
+				foreach (var ui in topUI)
+				{
+					ui.DORotate (Vector3.right * (limitRot - x), animTime).Play ();
+					ui.DOAnchorPosY ((limitRot - x), animTime).Play ();
+				}
+				foreach (var ui in bottomUI)
+				{
+					ui.DORotate (Vector3.right * x, animTime).Play ();
+					ui.DOAnchorPosY (-x, animTime).Play ();
+				}
 			})
 			.AddTo (this);
 
@@ -37,10 +49,16 @@ public class ARCameraSync : UIBehaviour
 			.Subscribe (_ =>
 			{
 				var y = Mathf.Clamp (_ * 10.0f, 0.0f, limitRot);
-				planes[2].DORotate (Vector3.up * y, animTime).Play ();
-				planes[2].DOAnchorPosX (y, animTime).Play ();
-				planes[3].DORotate (Vector3.up * (limitRot - y), animTime).Play ();
-				planes[3].DOAnchorPosX (-(limitRot - y), animTime).Play ();
+				foreach (var ui in rightUI)
+				{
+					ui.DORotate (Vector3.up * y, animTime).Play ();
+					ui.DOAnchorPosX (y, animTime).Play ();
+				}
+				foreach (var ui in leftUI)
+				{
+					ui.DORotate (Vector3.up * (limitRot - y), animTime).Play ();
+					ui.DOAnchorPosX (-(limitRot - y), animTime).Play ();
+				}
 			})
 			.AddTo (this);
 	}
@@ -52,15 +70,15 @@ public class ARCameraSync : UIBehaviour
 		triggerRotationY.Value += Input.gyro.rotationRate.y;
 	}
 
-	protected void OnGUI ()
-	{
-		GUI.skin.label.fontSize = Screen.width / 40;
+	// protected void OnGUI ()
+	// {
+	// 	GUI.skin.label.fontSize = Screen.width / 40;
 
-		GUILayout.Label ("Orientation: " + Screen.orientation);
-		GUILayout.Label ("input.gyro.attitude: " + Input.gyro.attitude);
-		GUILayout.Label ("Input.gyro.rotationRate: " + Input.gyro.rotationRate);
-		GUILayout.Label ("GyroToUnity (Input.gyro.attitude).eulerAngles: " + GyroToUnity (Input.gyro.attitude).eulerAngles);
-	}
+	// 	GUILayout.Label ("Orientation: " + Screen.orientation);
+	// 	GUILayout.Label ("input.gyro.attitude: " + Input.gyro.attitude);
+	// 	GUILayout.Label ("Input.gyro.rotationRate: " + Input.gyro.rotationRate);
+	// 	GUILayout.Label ("GyroToUnity (Input.gyro.attitude).eulerAngles: " + GyroToUnity (Input.gyro.attitude).eulerAngles);
+	// }
 
 	private Quaternion GyroToUnity (Quaternion q)
 	{
