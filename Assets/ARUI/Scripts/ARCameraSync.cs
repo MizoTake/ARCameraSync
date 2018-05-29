@@ -20,14 +20,16 @@ public class ARCameraSync : UIBehaviour
 	{
 		Input.gyro.enabled = true;
 		var animTime = 0.3f;
-		var limitRot = 60.0f;
+		var limitRot = 80.0f;
 
 		triggerRotationX
 			.Subscribe (_ =>
 			{
 				var x = Mathf.Clamp (_ * 10.0f, 0.0f, limitRot);
-				planes[0].DORotate (Vector3.right * (limitRot - x), animTime);
-				planes[1].DORotate (Vector3.right * x, animTime);
+				planes[0].DORotate (Vector3.right * (limitRot - x), animTime).Play ();
+				planes[0].DOAnchorPosY ((limitRot - x), animTime).Play ();
+				planes[1].DORotate (Vector3.right * x, animTime).Play ();
+				planes[1].DOAnchorPosY (-x, animTime).Play ();
 			})
 			.AddTo (this);
 
@@ -35,8 +37,10 @@ public class ARCameraSync : UIBehaviour
 			.Subscribe (_ =>
 			{
 				var y = Mathf.Clamp (_ * 10.0f, 0.0f, limitRot);
-				planes[2].DORotate (Vector3.up * y, animTime);
-				planes[3].DORotate (Vector3.up * (limitRot - y), animTime);
+				planes[2].DORotate (Vector3.up * y, animTime).Play ();
+				planes[2].DOAnchorPosX (y, animTime).Play ();
+				planes[3].DORotate (Vector3.up * (limitRot - y), animTime).Play ();
+				planes[3].DOAnchorPosX (-(limitRot - y), animTime).Play ();
 			})
 			.AddTo (this);
 	}
