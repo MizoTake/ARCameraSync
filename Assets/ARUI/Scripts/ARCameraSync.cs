@@ -29,35 +29,35 @@ public class ARCameraSync : UIBehaviour
 		var limitRot = 80.0f;
 
 		triggerRotationX
+			.Select (_ => Mathf.Clamp (_ * 10.0f, 0.0f, limitRot))
 			.Subscribe (_ =>
 			{
-				var x = Mathf.Clamp (_ * 10.0f, 0.0f, limitRot);
 				foreach (var ui in topUI)
 				{
-					ui.DORotate (Vector3.right * (limitRot - x), animTime).Play ();
-					ui.DOAnchorPosY ((limitRot - x), animTime).Play ();
+					ui.DORotate (Vector3.right * (limitRot - _), animTime).Play ();
+					ui.DOAnchorPosY ((limitRot - _), animTime).Play ();
 				}
 				foreach (var ui in bottomUI)
 				{
-					ui.DORotate (Vector3.right * x, animTime).Play ();
-					ui.DOAnchorPosY (-x, animTime).Play ();
+					ui.DORotate (Vector3.right * _, animTime).Play ();
+					ui.DOAnchorPosY (-_, animTime).Play ();
 				}
 			})
 			.AddTo (this);
 
 		triggerRotationY
+			.Select (_ => Mathf.Clamp (_ * 10.0f, 0.0f, limitRot))
 			.Subscribe (_ =>
 			{
-				var y = Mathf.Clamp (_ * 10.0f, 0.0f, limitRot);
 				foreach (var ui in rightUI)
 				{
-					ui.DORotate (Vector3.up * y, animTime).Play ();
-					ui.DOAnchorPosX (y, animTime).Play ();
+					ui.DORotate (Vector3.up * _, animTime).Play ();
+					ui.DOAnchorPosX (_, animTime).Play ();
 				}
 				foreach (var ui in leftUI)
 				{
-					ui.DORotate (Vector3.up * (limitRot - y), animTime).Play ();
-					ui.DOAnchorPosX (-(limitRot - y), animTime).Play ();
+					ui.DORotate (Vector3.up * (limitRot - _), animTime).Play ();
+					ui.DOAnchorPosX (-(limitRot - _), animTime).Play ();
 				}
 			})
 			.AddTo (this);
@@ -68,20 +68,5 @@ public class ARCameraSync : UIBehaviour
 	{
 		triggerRotationX.Value += Input.gyro.rotationRate.x;
 		triggerRotationY.Value += Input.gyro.rotationRate.y;
-	}
-
-	// protected void OnGUI ()
-	// {
-	// 	GUI.skin.label.fontSize = Screen.width / 40;
-
-	// 	GUILayout.Label ("Orientation: " + Screen.orientation);
-	// 	GUILayout.Label ("input.gyro.attitude: " + Input.gyro.attitude);
-	// 	GUILayout.Label ("Input.gyro.rotationRate: " + Input.gyro.rotationRate);
-	// 	GUILayout.Label ("GyroToUnity (Input.gyro.attitude).eulerAngles: " + GyroToUnity (Input.gyro.attitude).eulerAngles);
-	// }
-
-	private Quaternion GyroToUnity (Quaternion q)
-	{
-		return new Quaternion (q.x, q.y, -q.z, -q.w);
 	}
 }
